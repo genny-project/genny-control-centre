@@ -2,7 +2,9 @@
 
 A Command Line Tool used to interact with a local genny system to assist in development.
 
-## Build
+&nbsp;
+
+## Building
 
 ```shell
 ./build.sh
@@ -14,7 +16,15 @@ A Command Line Tool used to interact with a local genny system to assist in deve
 ./install.sh
 ```
 
+&nbsp;
+
 ## Examples
+
+### Token
+
+```shell
+gctl get token
+```
 
 ### Cache
 
@@ -24,10 +34,6 @@ gctl read cache PER_USER
 
 ```shell
 gctl watch db PER_USER
-```
-
-```shell
-gctl get token
 ```
 
 ### Genny
