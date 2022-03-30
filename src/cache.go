@@ -25,7 +25,7 @@ func cacheOperation(args []string) {
 			removeCache(args[2])
 
 		default:
-			fmt.Printf(red("Invalid argument: %s\n\n"), args[1])
+			fmt.Printf(Red("Invalid argument: %s\n\n"), args[1])
 			helpPrompt()
 			os.Exit(0)
 	}
@@ -33,7 +33,7 @@ func cacheOperation(args []string) {
 
 func readCache(key string) {
 
-	fmt.Printf("Reading %s from cache...\n", yellow(key))
+	fmt.Printf("Reading %s from cache...\n", Yellow(key))
 
 	token := getToken()
 
@@ -75,7 +75,7 @@ func readCache(key string) {
 
 func writeCache(key string, value string) {
 
-	fmt.Printf("Writing value to cache for key %s...\n", yellow(key))
+	fmt.Printf("Writing value to cache for key %s...\n", Yellow(key))
 
 	token := getToken()
 
@@ -115,7 +115,7 @@ func writeCache(key string, value string) {
 
 func removeCache(key string) {
 
-	fmt.Printf("Removing value in cache for key %s...\n", yellow(key))
+	fmt.Printf("Removing value in cache for key %s...\n", Yellow(key))
 
 	token := getToken()
 

@@ -14,13 +14,13 @@ func blacklistOperation(args []string) {
 			deleteBlacklist(args[2])
 
 		default:
-			fmt.Printf(red("Invalid argument: %s\n\n"), args[1])
+			fmt.Printf(Red("Invalid argument: %s\n\n"), args[1])
 			helpPrompt()
 			os.Exit(0)
 	}
 }
 
 func deleteBlacklist(id string) {
-	fmt.Printf("Reloading Rules...\n")
+	unavailable()
 }
 

@@ -20,9 +20,9 @@ func repos() []string {
 
 func repoStatus() {
 
-	// save current dir and find home
+	// save current dir and find HOME
 	current, _ := os.Getwd()
-	home := os.Getenv("HOME")
+	HOME := os.Getenv("HOME")
 
 	repos := repos()
 
@@ -30,12 +30,12 @@ func repoStatus() {
 
 		// create path to rep
 		repo := repos[i]
-		path := home + "/projects/genny/" + repo
+		path := HOME + "/projects/genny/" + repo
 
 		// Move to repo and pull
 		os.Chdir(path)
 		branch, _ := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD").Output()
-		fmt.Printf("Project: %s \t Branch; %s\n", yellow(repo), green(string(branch)))
+		fmt.Printf("Project: %s \t Branch; %s\n", Yellow(repo), Green(string(branch)))
 
 		cmd := exec.Command("git", "-c", "color.status=always", "status")
 		tail(cmd)
@@ -48,11 +48,11 @@ func repoStatus() {
 
 func cloneRepos(version string) {
 
-	// save current dir and find home
+	// save current dir and find HOME
 	current, _ := os.Getwd()
-	home := os.Getenv("HOME")
+	HOME := os.Getenv("HOME")
 
-	path := home + "/projects/genny"
+	path := HOME + "/projects/genny"
 	os.Chdir(path)
 
 	repos := repos()
@@ -62,7 +62,7 @@ func cloneRepos(version string) {
 		// create path to rep
 		repo := repos[i]
 		url := "git@github.com:genny-project/" + repo
-		fmt.Println(yellow("Cloning " + repo + "..."))
+		fmt.Println(Yellow("Cloning " + repo + "..."))
 
 		// clone repo
 		cmd := exec.Command("git", "clone", "-b", version, url)
@@ -76,9 +76,9 @@ func cloneRepos(version string) {
 
 func pullRepos() {
 
-	// save current dir and find home
+	// save current dir and find HOME
 	current, _ := os.Getwd()
-	home := os.Getenv("HOME")
+	HOME := os.Getenv("HOME")
 
 	repos := repos()
 
@@ -86,8 +86,8 @@ func pullRepos() {
 
 		// create path to rep
 		repo := repos[i]
-		path := home + "/projects/genny/" + repo
-		fmt.Println(yellow("Pulling " + repo + "..."))
+		path := HOME + "/projects/genny/" + repo
+		fmt.Println(Yellow("Pulling " + repo + "..."))
 
 		// Move to repo and pull
 		os.Chdir(path)
@@ -102,17 +102,17 @@ func pullRepos() {
 
 func buildDockerImages() {
 
-	// save current dir and find home
+	// save current dir and find HOME
 	current, _ := os.Getwd()
-	home := os.Getenv("HOME")
+	HOME := os.Getenv("HOME")
 
 	// build dependencies
 	for i := 0; i < len(dependencies); i++ {
 
 		// create path to repo
 		repo := dependencies[i]
-		path := home + "/projects/genny/" + repo
-		fmt.Println(yellow("Building " + repo + "..."))
+		path := HOME + "/projects/genny/" + repo
+		fmt.Println(Yellow("Building " + repo + "..."))
 
 		// Move to repo and build
 		os.Chdir(path)
@@ -126,8 +126,8 @@ func buildDockerImages() {
 
 		// create path to repo
 		repo := services[i]
-		path := home + "/projects/genny/" + repo
-		fmt.Println(yellow("Building " + repo + "..."))
+		path := HOME + "/projects/genny/" + repo
+		fmt.Println(Yellow("Building " + repo + "..."))
 
 		// Move to repo and build image
 		os.Chdir(path)
@@ -138,5 +138,73 @@ func buildDockerImages() {
 
 	// set back to current working dir
 	os.Chdir(current)
+}
+
+func startGenny(containers []string) {
+
+	// save current dir and find HOME
+	current, _ := os.Getwd()
+	HOME := os.Getenv("HOME")
+
+	gennyMain := HOME + "/projects/genny/genny-main"
+	os.Chdir(gennyMain)
+
+	if containers != nil {
+		// start containers
+		arguments := append([]string{"up", "-d"}, containers...)
+		cmd := exec.Command("docker-compose", arguments...)
+		cmd.Stderr = os.Stderr
+		tail(cmd)
+	} else {
+		// start all containers
+		cmd := exec.Command("docker-compose", "up", "-d")
+		cmd.Stderr = os.Stderr
+		tail(cmd)
+	}
+
+	// set back to current working dir
+	os.Chdir(current)
+}
+
+func stopGenny(containers []string) {
+
+	// save current dir and find HOME
+	current, _ := os.Getwd()
+	HOME := os.Getenv("HOME")
+
+	gennyMain := HOME + "/projects/genny/genny-main"
+	os.Chdir(gennyMain)
+
+	if containers != nil {
+		// stop containers
+		arguments := append([]string{"stop"}, containers...)
+		cmd := exec.Command("docker-compose", arguments...)
+		cmd.Stderr = os.Stderr
+		tail(cmd)
+		// remove containers
+		arguments = append([]string{"rm", "-f"}, containers...)
+		cmd = exec.Command("docker-compose", arguments...)
+		cmd.Stderr = os.Stderr
+		tail(cmd)
+	} else {
+		// stop all containers
+		cmd := exec.Command("docker-compose", "stop")
+		cmd.Stderr = os.Stderr
+		tail(cmd)
+		// remove all containers
+		cmd = exec.Command("docker-compose", "rm", "-f")
+		cmd.Stderr = os.Stderr
+		tail(cmd)
+	}
+
+	// set back to current working dir
+	os.Chdir(current)
+}
+
+func restartGenny(containers []string) {
+
+	// stop and start containers
+	stopGenny(containers)
+	startGenny(containers)
 }
 

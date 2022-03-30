@@ -33,7 +33,7 @@ func tokenOperation(args []string) {
 			fmt.Println(token)
 
 		default:
-			fmt.Printf(red("Invalid argument: %s\n\n"), args[1])
+			fmt.Printf(Red("Invalid argument: %s\n\n"), args[1])
 			helpPrompt()
 			os.Exit(0)
 	}

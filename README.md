@@ -13,9 +13,10 @@ A Command Line Tool used to interact with a local genny system to assist in deve
 cd $HOME/projects/genny
 git clone https://github.com/genny-project/genny-control-centre.git
 ```
-* **Build from source.**
+* **Install Packages and Build from source.**
 ```shell
 cd genny-control-centre
+./packages.sh
 ./build.sh
 ```
 * **Add executable to path**

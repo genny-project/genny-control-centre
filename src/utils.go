@@ -9,6 +9,11 @@ import (
 	"os/exec"
 )
 
+func unavailable() {
+	fmt.Println(Red("Sorry, this action is unavailable at this moment."))
+	os.Exit(0)
+}
+
 func PrettyString(str string) (string, error) {
 
     var prettyJSON bytes.Buffer
@@ -44,8 +49,8 @@ func tail(cmd *exec.Cmd) {
 	// create a pipe for the output of the script
 	cmdReader, err := cmd.StdoutPipe()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error creating StdoutPipe for Cmd", err)
-		return
+		fmt.Println("Error creating StdoutPipe for Cmd: " + err.Error())
+		panic(err)
 	}
 
 	scanner := bufio.NewScanner(cmdReader)
@@ -57,13 +62,13 @@ func tail(cmd *exec.Cmd) {
 
 	err = cmd.Start()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error starting Cmd", err)
-		return
+		fmt.Println("Error starting Cmd: " + err.Error())
+		panic(err)
 	}
 
 	err = cmd.Wait()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error waiting for Cmd", err)
-		return
+		fmt.Println("Error waiting for Cmd: " + err.Error())
+		panic(err)
 	}
 }

@@ -18,16 +18,16 @@ func searchOperation(args []string) {
 			count(args[2])
 
 		default:
-			fmt.Printf(red("Invalid argument: %s\n\n"), args[1])
+			fmt.Printf(Red("Invalid argument: %s\n\n"), args[1])
 			helpPrompt()
 			os.Exit(0)
 	}
 }
 
 func fetch(json string) {
-	fmt.Printf("Fetching...\n")
+	unavailable()
 }
 
 func count(json string) {
-	fmt.Printf("Counting...\n")
+	unavailable()
 }

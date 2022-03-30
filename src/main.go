@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 	"fmt"
-	// "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 )
 
 // environment variables
@@ -19,10 +19,11 @@ var infinispanPassword string
 
 func main() {
 
-	// err := godotenv.Load("~/projects/genny/genny-main/genny.env")
-	// if err != nil {
-	// 	fmt.Printf(red("Could not load genny.env. Err: %s"), err)
-	// }
+	HOME := os.Getenv("HOME")
+	err := godotenv.Load(HOME + "/projects/genny/genny-main/genny.env")
+	if err != nil {
+		fmt.Printf(Red("Could not load genny.env. Err: %s"), err)
+	}
 
 	var version string = "1.0.0"
 
@@ -35,42 +36,66 @@ func main() {
 	}
 
 	// single length commands
-	if len(args) == 1 {
 
-		switch args[0] {
+	switch args[0] {
 
-			case "version":
-				fmt.Printf("%s\n", version)
+	case "version":
+		fmt.Printf("%s\n", version)
+		os.Exit(0)
 
-			case "help":
-				help()
+	case "help":
+		help()
+		os.Exit(0)
 
-			case "status":
-				repoStatus()
+	case "status":
+		repoStatus()
+		os.Exit(0)
 
-			case "clone":
-				version := ""
-				if len(args) > 1 {
-					version = args[1]
-				}
-				cloneRepos(version)
-
-			case "pull":
-				pullRepos()
-
-			case "build":
-				buildDockerImages()
-
-			default:
-				fmt.Println("Unknown command: " + args[0])
-				helpPrompt()
+	case "clone":
+		version := ""
+		if len(args) > 1 {
+			version = args[1]
 		}
+		cloneRepos(version)
+		os.Exit(0)
 
+	case "pull":
+		pullRepos()
+		os.Exit(0)
+
+	case "build":
+		buildDockerImages()
+		os.Exit(0)
+
+	case "start":
+		if len(args) > 1 {
+			startGenny(args[1:])
+		} else {
+			startGenny(nil)
+		}
+		os.Exit(0)
+
+	case "stop":
+		if len(args) > 1 {
+			stopGenny(args[1:])
+		} else {
+			stopGenny(nil)
+		}
+		os.Exit(0)
+
+	case "restart":
+		if len(args) > 1 {
+			restartGenny(args[1:])
+		} else {
+			restartGenny(nil)
+		}
 		os.Exit(0)
 	}
 
 	// multi length commands
-	switch args[1] {
+	if len(args) > 1 {
+
+		switch args[1] {
 
 		case "cache":
 			exitOnNil(args, 1)
@@ -97,10 +122,13 @@ func main() {
 			blacklistOperation(args)
 
 		default:
-			fmt.Printf(red("Invalid argument: %s\n"), args[1])
+			fmt.Printf(Red("Invalid argument: %s\n"), args[1])
 			helpPrompt()
-			os.Exit(0)
+		}
 	}
+
+	// finish
+	os.Exit(0)
 }
 
 func helpPrompt() {
@@ -118,7 +146,7 @@ func help() {
 	fmt.Println("Example: gctl read cache SBE_USERS")
 	fmt.Println("")
 	fmt.Println("")
-	fmt.Println(blue("Commands: "))
+	fmt.Println(Blue("Commands: "))
 	fmt.Println("    help         Show valid commands")
 	fmt.Println("    version      Print the version")
 	fmt.Println("    cache        Perfrom a cache operation")
@@ -129,27 +157,27 @@ func help() {
 	fmt.Println("    blacklist    Perform a blacklist operation")
 	fmt.Println("")
 	fmt.Println("")
-	fmt.Println(blue("Cache Operations: "))
+	fmt.Println(Blue("Cache Operations: "))
 	fmt.Println("    read         Read an item from the cache")
 	fmt.Println("    write        Write json to the cache")
 	fmt.Println("    remove       Remove an item from the cache")
 	fmt.Println("")
-	fmt.Println(blue("Entity Operations: "))
+	fmt.Println(Blue("Entity Operations: "))
 	fmt.Println("    show         Show the state of an entity in the database")
 	fmt.Println("    watch        Watch the state of an entity in the database")
 	fmt.Println("")
-	fmt.Println(blue("Search Operations: "))
+	fmt.Println(Blue("Search Operations: "))
 	fmt.Println("    fetch        Fetch entities using a Genny search")
 	fmt.Println("    count        Count entities using a Genny search")
 	fmt.Println("")
-	fmt.Println(blue("Token Operations: "))
+	fmt.Println(Blue("Token Operations: "))
 	fmt.Println("    get          Get an access token")
 	fmt.Println("")
-	fmt.Println(blue("Rules Operations: "))
+	fmt.Println(Blue("Rules Operations: "))
 	fmt.Println("    reload       Reload the rules engine")
 	fmt.Println("    run          Run a rule group")
 	fmt.Println("")
-	fmt.Println(blue("Blacklist Operations: "))
+	fmt.Println(Blue("Blacklist Operations: "))
 	fmt.Println("    delete       Delete a blacklist by user id")
 	fmt.Println("")
 }
@@ -157,7 +185,7 @@ func help() {
 func exitOnNil(args []string, index int) {
 
 	if len(args) <= index {
-		fmt.Println(red("Incorrect number of arguments!"))
+		fmt.Println(Red("Incorrect number of arguments!"))
 		helpPrompt()
 		os.Exit(0)
 	}

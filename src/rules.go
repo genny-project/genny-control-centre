@@ -17,16 +17,16 @@ func rulesOperation(args []string) {
 			runRules(args[2])
 
 		default:
-			fmt.Printf(red("Invalid argument: %s\n\n"), args[1])
+			fmt.Printf(Red("Invalid argument: %s\n\n"), args[1])
 			helpPrompt()
 			os.Exit(0)
 	}
 }
 
 func reloadRules() {
-	fmt.Printf("Reloading Rules...\n")
+	unavailable()
 }
 
 func runRules(key string) {
-	fmt.Printf("Running Rule Group %s...\n", yellow(key))
+	unavailable()
 }

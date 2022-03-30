@@ -42,14 +42,14 @@ func entityOperation(args []string) {
 			watchEntity(args[2])
 
 		default:
-			fmt.Printf(red("Invalid argument: %s\n\n"), args[1])
+			fmt.Printf(Red("Invalid argument: %s\n\n"), args[1])
 			help()
 			os.Exit(0)
 	}
 }
 
 func showEntity(code string) {
-	fmt.Printf("Showing Entity %s...\n", yellow(code))
+	fmt.Printf("Showing Entity %s...\n", Yellow(code))
 
 	token := getToken()
 
@@ -160,6 +160,6 @@ func showEntity(code string) {
 }
 
 func watchEntity(code string) {
-	fmt.Printf("Watching entity %s...\n", yellow(code))
+	unavailable()
 }
 
