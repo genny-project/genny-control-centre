@@ -2,8 +2,12 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
+	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 var dependencies = []string{"qwandaq", "serviceq"}  
@@ -18,11 +22,37 @@ func repos() []string {
 	return output
 }
 
-func repoStatus() {
+func loadConf(user string) {
 
-	// save current dir and find HOME
-	current, _ := os.Getwd()
-	HOME := os.Getenv("HOME")
+	fmt.Println("\nLoading credentials config for " + Blue(user))
+
+	err := godotenv.Load(HOME + "/.genny/credentials/credentials-" + user + "/conf.env")
+
+	if err != nil {
+		fmt.Printf(Red("Could not load conf.env for %s, Err: %s"), user, err)
+	}
+}
+
+func loadProjects() {
+	
+	os.Chdir(GENNY_MAIN)
+
+   files, _ := ioutil.ReadDir("../")
+   
+   for _, f := range files {
+	   if strings.HasPrefix(f.Name(), "prj_") {
+
+		   fmt.Println("Copying rules for " + Yellow(f.Name()))
+
+		   cmd := exec.Command("cp", "-rp", "../"+f.Name()+"/rules", "./rules/"+f.Name()+"/")
+		   cmd.Stderr = os.Stderr
+		   tail(cmd)
+	   }
+   }
+
+}
+
+func repoStatus() {
 
 	repos := repos()
 
@@ -43,14 +73,10 @@ func repoStatus() {
 	}
 
 	// set back to current working dir
-	os.Chdir(current)
+	os.Chdir(CURREND_DIR)
 }
 
 func cloneRepos(version string) {
-
-	// save current dir and find HOME
-	current, _ := os.Getwd()
-	HOME := os.Getenv("HOME")
 
 	path := HOME + "/projects/genny"
 	os.Chdir(path)
@@ -71,14 +97,10 @@ func cloneRepos(version string) {
 	}
 
 	// set back to current working dir
-	os.Chdir(current)
+	os.Chdir(CURREND_DIR)
 }
 
 func pullRepos() {
-
-	// save current dir and find HOME
-	current, _ := os.Getwd()
-	HOME := os.Getenv("HOME")
 
 	repos := repos()
 
@@ -97,14 +119,10 @@ func pullRepos() {
 	}
 
 	// set back to current working dir
-	os.Chdir(current)
+	os.Chdir(CURREND_DIR)
 }
 
 func buildDockerImages() {
-
-	// save current dir and find HOME
-	current, _ := os.Getwd()
-	HOME := os.Getenv("HOME")
 
 	// build dependencies
 	for i := 0; i < len(dependencies); i++ {
@@ -137,17 +155,19 @@ func buildDockerImages() {
 	}
 
 	// set back to current working dir
-	os.Chdir(current)
+	os.Chdir(CURREND_DIR)
 }
 
 func startGenny(containers []string) {
 
-	// save current dir and find HOME
-	current, _ := os.Getwd()
-	HOME := os.Getenv("HOME")
+	os.Chdir(GENNY_MAIN)
 
-	gennyMain := HOME + "/projects/genny/genny-main"
-	os.Chdir(gennyMain)
+	loadConf("dev1")
+
+	fmt.Println("")
+	loadProjects()
+
+	fmt.Print("\nStarting Docker Containers...\n\n")
 
 	if containers != nil {
 		// start containers
@@ -163,17 +183,14 @@ func startGenny(containers []string) {
 	}
 
 	// set back to current working dir
-	os.Chdir(current)
+	os.Chdir(CURREND_DIR)
 }
 
 func stopGenny(containers []string) {
 
-	// save current dir and find HOME
-	current, _ := os.Getwd()
-	HOME := os.Getenv("HOME")
+	fmt.Print("\nStopping Docker Containers...\n\n")
 
-	gennyMain := HOME + "/projects/genny/genny-main"
-	os.Chdir(gennyMain)
+	os.Chdir(GENNY_MAIN)
 
 	if containers != nil {
 		// stop containers
@@ -181,6 +198,9 @@ func stopGenny(containers []string) {
 		cmd := exec.Command("docker-compose", arguments...)
 		cmd.Stderr = os.Stderr
 		tail(cmd)
+
+		fmt.Print("\nRemoving Docker Containers...\n\n")
+
 		// remove containers
 		arguments = append([]string{"rm", "-f"}, containers...)
 		cmd = exec.Command("docker-compose", arguments...)
@@ -191,6 +211,9 @@ func stopGenny(containers []string) {
 		cmd := exec.Command("docker-compose", "stop")
 		cmd.Stderr = os.Stderr
 		tail(cmd)
+
+		fmt.Print("\nRemoving Docker Containers...\n\n")
+
 		// remove all containers
 		cmd = exec.Command("docker-compose", "rm", "-f")
 		cmd.Stderr = os.Stderr
@@ -198,7 +221,7 @@ func stopGenny(containers []string) {
 	}
 
 	// set back to current working dir
-	os.Chdir(current)
+	os.Chdir(CURREND_DIR)
 }
 
 func restartGenny(containers []string) {

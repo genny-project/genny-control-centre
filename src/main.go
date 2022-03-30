@@ -17,10 +17,17 @@ var infinispanURL string
 var infinispanUsername string
 var infinispanPassword string
 
+var HOME string
+var CURREND_DIR string
+var GENNY_MAIN string
+
 func main() {
 
-	HOME := os.Getenv("HOME")
-	err := godotenv.Load(HOME + "/projects/genny/genny-main/genny.env")
+	HOME = os.Getenv("HOME")
+	CURREND_DIR, _ = os.Getwd()
+	GENNY_MAIN = HOME + "/projects/genny/genny-main"
+
+	err := godotenv.Load(HOME + "/projects/genny/genny-main/.env")
 	if err != nil {
 		fmt.Printf(Red("Could not load genny.env. Err: %s"), err)
 	}
