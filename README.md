@@ -65,3 +65,15 @@ gctl pull
 ```shell
 gctl build
 ```
+
+```shell
+gctl start
+```
+
+```shell
+gctl stop
+```
+
+```shell
+gctl restart
+```
