@@ -22,15 +22,21 @@ func repos() []string {
 	return output
 }
 
-func loadConf(user string) {
+func loadCredentials(user string) {
 
 	fmt.Println("\nLoading credentials config for " + Blue(user))
 
-	err := godotenv.Load(HOME + "/.genny/credentials/credentials-" + user + "/conf.env")
+	credentialsPath := HOME + "/.genny/credentials/credentials-" + user
+
+	err := godotenv.Load(credentialsPath + "/conf.env")
 
 	if err != nil {
 		fmt.Printf(Red("Could not load conf.env for %s, Err: %s"), user, err)
 	}
+
+	cmd := exec.Command("cp", credentialsPath + "/StoredCredential", GENNY_MAIN + "/google_credentials/StoredCredential")
+	cmd.Stderr = os.Stderr
+	tail(cmd)
 }
 
 func loadProjects() {
@@ -161,9 +167,7 @@ func buildDockerImages() {
 func startGenny(containers []string) {
 
 	os.Chdir(GENNY_MAIN)
-
-	loadConf("dev1")
-
+	loadCredentials("dev1")
 	fmt.Println("")
 	loadProjects()
 
@@ -189,7 +193,6 @@ func startGenny(containers []string) {
 func stopGenny(containers []string) {
 
 	fmt.Print("\nStopping Docker Containers...\n\n")
-
 	os.Chdir(GENNY_MAIN)
 
 	if containers != nil {
