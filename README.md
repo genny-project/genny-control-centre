@@ -4,16 +4,27 @@ A Command Line Tool used to interact with a local genny system to assist in deve
 
 &nbsp;
 
-## Building
-
-```shell
-./build.sh
-```
-
 ## Installing
 
+* **Ensure your you have Golang installed on your device** - https://go.dev/
+
+* **Clone genny-control-centre into genny folder.**
+```shell
+cd $HOME/projects/genny
+git clone https://github.com/genny-project/genny-control-centre.git
+```
+* **Build from source.**
+```shell
+cd genny-control-centre
+./build.sh
+```
+* **Add executable to path**
 ```shell
 ./install.sh
+```
+* **Run the help command to get started**
+```shell
+gctl help
 ```
 
 &nbsp;
