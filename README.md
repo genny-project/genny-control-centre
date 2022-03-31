@@ -6,14 +6,16 @@ A Command Line Tool used to interact with a local genny system to assist in deve
 
 ## Installing
 
-* **Download the zipped executable**
+* **Download the zipped executable:** 
+
+```gctl-bin.zip```
 
 https://github.com/genny-project/genny-control-centre/releases
 
 * **Unzip and add executable to path**
 ```shell
-unzip gctl.zip
-cd gctl
+unzip gctl-bin.zip
+cd gctl-bin
 ./install.sh
 ```
 
