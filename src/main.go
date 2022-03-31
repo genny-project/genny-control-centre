@@ -27,9 +27,9 @@ func main() {
 	CURREND_DIR, _ = os.Getwd()
 	GENNY_MAIN = HOME + "/projects/genny/genny-main"
 
-	err := godotenv.Load(HOME + "/projects/genny/genny-main/.env")
+	err := godotenv.Load(HOME + "/projects/genny/.env")
 	if err != nil {
-		fmt.Printf(Red("Could not load genny.env. Err: %s"), err)
+		fmt.Printf(Red("Could not load .env. Err: %s"), err)
 	}
 
 	var version string = "1.0.0"
