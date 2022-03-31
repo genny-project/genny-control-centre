@@ -19,6 +19,11 @@ cd gctl-bin
 ./install.sh
 ```
 
+* **Run the help command to get started**
+```shell
+gctl help
+```
+
 &nbsp;
 
 ## Build from source
@@ -40,10 +45,7 @@ cd genny-control-centre
 ```shell
 ./install.sh
 ```
-* **Run the help command to get started**
-```shell
-gctl help
-```
+
 
 &nbsp;
 
