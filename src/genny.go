@@ -38,21 +38,46 @@ func repos() []string {
 	return output
 }
 
-func loadCredentials(user string) {
+func Merge(x map[string]string, y map[string]string) map[string]string {
+
+	output := make(map[string]string)
+
+	for k, v := range y {
+		output[k] = v
+	}
+
+	for k, v := range x {
+		output[k] = v
+	}
+
+	return output
+}
+
+func loadEnvironment(user string) {
 
 	fmt.Println("\nLoading credentials config for " + Blue(user))
 
+	var envMap map[string]string
+	var credMap map[string]string
+
+	envMap, err := godotenv.Read(ENV_FILE)
+	if err != nil {
+		fmt.Printf(Red("Could not read %s, Err: %s"), ENV_FILE, err)
+	}
+
 	credentialsPath := HOME + "/.genny/credentials/credentials-" + user
 
-	err := godotenv.Load(credentialsPath + "/conf.env")
-
+    credMap, err = godotenv.Read(credentialsPath + "/conf.env")
 	if err != nil {
 		fmt.Printf(Red("Could not load conf.env for %s, Err: %s"), user, err)
 	}
 
-	cmd := exec.Command("cp", credentialsPath + "/StoredCredential", GENNY_MAIN + "/google_credentials/StoredCredential")
-	cmd.Stderr = os.Stderr
-	tail(cmd)
+	output := Merge(envMap, credMap)
+
+	err = godotenv.Write(output, GENNY_MAIN + "/.env")
+	if err != nil {
+		panic(err)
+	}
 }
 
 func loadProjects() {
@@ -106,7 +131,7 @@ func repoStatus() {
 	}
 
 	// set back to current working dir
-	os.Chdir(CURREND_DIR)
+	os.Chdir(CURRENT_DIR)
 }
 
 func cloneRepos(version string) {
@@ -130,7 +155,7 @@ func cloneRepos(version string) {
 	}
 
 	// set back to current working dir
-	os.Chdir(CURREND_DIR)
+	os.Chdir(CURRENT_DIR)
 }
 
 func pullRepos() {
@@ -152,7 +177,7 @@ func pullRepos() {
 	}
 
 	// set back to current working dir
-	os.Chdir(CURREND_DIR)
+	os.Chdir(CURRENT_DIR)
 }
 
 func checkoutRepos(branch string) {
@@ -177,7 +202,7 @@ func checkoutRepos(branch string) {
 	}
 
 	// set back to current working dir
-	os.Chdir(CURREND_DIR)
+	os.Chdir(CURRENT_DIR)
 }
 
 func buildDockerImages() {
@@ -213,7 +238,7 @@ func buildDockerImages() {
 	}
 
 	// set back to current working dir
-	os.Chdir(CURREND_DIR)
+	os.Chdir(CURRENT_DIR)
 }
 
 func startGenny(containers []string) {
@@ -221,7 +246,7 @@ func startGenny(containers []string) {
 	os.Chdir(GENNY_MAIN)
 
 	// load credentials and rules directories
-	loadCredentials("dev1")
+	loadEnvironment("dev1")
 	fmt.Println("")
 
 	loadProjects()
@@ -247,7 +272,7 @@ func startGenny(containers []string) {
 	}
 
 	// set back to current working dir
-	os.Chdir(CURREND_DIR)
+	os.Chdir(CURRENT_DIR)
 }
 
 func stopGenny(containers []string) {
@@ -284,7 +309,7 @@ func stopGenny(containers []string) {
 	}
 
 	// set back to current working dir
-	os.Chdir(CURREND_DIR)
+	os.Chdir(CURRENT_DIR)
 }
 
 func restartGenny(containers []string) {
@@ -332,5 +357,5 @@ func tailServiceLogs(containers []string) {
 	tail(cmd)
 
 	// set back to current working dir
-	os.Chdir(CURREND_DIR)
+	os.Chdir(CURRENT_DIR)
 }

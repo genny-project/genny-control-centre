@@ -6,22 +6,15 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// environment variables
-var realm string
-var keycloakURL string
-var clientID string
-var clientSecret string
-var serviceUsername string
-var servicePassword string
-var infinispanURL string
-var infinispanUsername string
-var infinispanPassword string
+// gctl version
+var version string = "1.0.2"
 
+// environment variables
 var HOME string
 var GENNY_HOME string
 var GENNY_MAIN string
 var ENV_FILE string
-var CURREND_DIR string
+var CURRENT_DIR string
 
 func main() {
 
@@ -31,14 +24,12 @@ func main() {
 	GENNY_MAIN = os.Getenv("GENNY_MAIN")
 	ENV_FILE = os.Getenv("ENV_FILE")
 
-	CURREND_DIR, _ = os.Getwd()
+	CURRENT_DIR, _ = os.Getwd()
 
 	err := godotenv.Load(ENV_FILE)
 	if err != nil {
 		fmt.Printf(Red("Could not load %s, Err: %s"), ENV_FILE, err)
 	}
-
-	var version string = "1.0.0"
 
 	// grab arguments
 	args := os.Args[1:]
@@ -51,73 +42,81 @@ func main() {
 	// single length commands
 	switch args[0] {
 
-	case "version":
-		fmt.Printf("%s\n", version)
-		os.Exit(0)
+		case "version":
+			fmt.Printf("%s\n", version)
+			os.Exit(0)
 
-	case "help":
-		help()
-		os.Exit(0)
+		case "help":
+			help()
+			os.Exit(0)
 
-	case "status":
-		repoStatus()
-		os.Exit(0)
+		case "status":
+			repoStatus()
+			os.Exit(0)
 
-	case "clone":
-		version := ""
-		if len(args) > 1 {
-			version = args[1]
-		}
-		cloneRepos(version)
-		os.Exit(0)
+		case "clone":
+			version := ""
+			if len(args) > 1 {
+				version = args[1]
+			}
+			cloneRepos(version)
+			os.Exit(0)
 
-	case "pull":
-		pullRepos()
-		os.Exit(0)
+		case "pull":
+			pullRepos()
+			os.Exit(0)
 
-	case "checkout":
-		if len(args) > 1 {
-			checkoutRepos(args[1])
-		} else {
-			fmt.Println(Red("Please provide a valid branch to checkout!"))
-		}
-		os.Exit(0)
+		case "checkout":
+			if len(args) > 1 {
+				checkoutRepos(args[1])
+			} else {
+				fmt.Println(Red("Please provide a valid branch to checkout!"))
+			}
+			os.Exit(0)
 
-	case "build":
-		buildDockerImages()
-		os.Exit(0)
+		case "build":
+			buildDockerImages()
+			os.Exit(0)
 
-	case "start":
-		if len(args) > 1 {
-			startGenny(args[1:])
-		} else {
-			startGenny(nil)
-		}
-		os.Exit(0)
+		case "start":
+			if len(args) > 1 {
+				startGenny(args[1:])
+			} else {
+				startGenny(nil)
+			}
+			os.Exit(0)
 
-	case "stop":
-		if len(args) > 1 {
-			stopGenny(args[1:])
-		} else {
-			stopGenny(nil)
-		}
-		os.Exit(0)
+		case "stop":
+			if len(args) > 1 {
+				stopGenny(args[1:])
+			} else {
+				stopGenny(nil)
+			}
+			os.Exit(0)
 
-	case "restart":
-		if len(args) > 1 {
-			restartGenny(args[1:])
-		} else {
-			restartGenny(nil)
-		}
-		os.Exit(0)
+		case "restart":
+			if len(args) > 1 {
+				restartGenny(args[1:])
+			} else {
+				restartGenny(nil)
+			}
+			os.Exit(0)
 
-	case "logs":
-		if len(args) > 1 {
-			tailServiceLogs(args[1:])
-		} else {
-			tailServiceLogs(nil)
-		}
-		os.Exit(0)
+		case "logs":
+			if len(args) > 1 {
+				tailServiceLogs(args[1:])
+			} else {
+				tailServiceLogs(nil)
+			}
+			os.Exit(0)
+
+		// case "write":
+		// 	// env, err := godotenv.Unmarshal("KEY=value")
+		// 	err = godotenv.Write(os.env, "./.env")
+		// 	if err != nil {
+		// 		panic(err)
+		// 	}
+		// 	os.Exit(0)
 	}
 
 	// multi length commands
