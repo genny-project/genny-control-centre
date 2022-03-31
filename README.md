@@ -6,6 +6,23 @@ A Command Line Tool used to interact with a local genny system to assist in deve
 
 ## Installing
 
+* **Download the zipped executable:** 
+
+```gctl-bin.zip```
+
+https://github.com/genny-project/genny-control-centre/releases
+
+* **Unzip and add executable to path**
+```shell
+unzip gctl-bin.zip
+cd gctl-bin
+./install.sh
+```
+
+&nbsp;
+
+## Build from source
+
 * **Ensure your you have Golang installed on your device** - https://go.dev/
 
 * **Clone genny-control-centre into genny folder.**
