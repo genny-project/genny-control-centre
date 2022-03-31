@@ -18,18 +18,24 @@ var infinispanUsername string
 var infinispanPassword string
 
 var HOME string
-var CURREND_DIR string
+var GENNY_HOME string
 var GENNY_MAIN string
+var ENV_FILE string
+var CURREND_DIR string
 
 func main() {
 
+	// genny location vars
 	HOME = os.Getenv("HOME")
-	CURREND_DIR, _ = os.Getwd()
-	GENNY_MAIN = HOME + "/projects/genny/genny-main"
+	GENNY_HOME = os.Getenv("GENNY_HOME")
+	GENNY_MAIN = os.Getenv("GENNY_MAIN")
+	ENV_FILE = os.Getenv("ENV_FILE")
 
-	err := godotenv.Load(HOME + "/projects/genny/.env")
+	CURREND_DIR, _ = os.Getwd()
+
+	err := godotenv.Load(ENV_FILE)
 	if err != nil {
-		fmt.Printf(Red("Could not load .env. Err: %s"), err)
+		fmt.Printf(Red("Could not load %s, Err: %s"), ENV_FILE, err)
 	}
 
 	var version string = "1.0.0"
@@ -43,7 +49,6 @@ func main() {
 	}
 
 	// single length commands
-
 	switch args[0] {
 
 	case "version":
@@ -103,6 +108,14 @@ func main() {
 			restartGenny(args[1:])
 		} else {
 			restartGenny(nil)
+		}
+		os.Exit(0)
+
+	case "logs":
+		if len(args) > 1 {
+			tailServiceLogs(args[1:])
+		} else {
+			tailServiceLogs(nil)
 		}
 		os.Exit(0)
 	}

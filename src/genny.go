@@ -294,3 +294,43 @@ func restartGenny(containers []string) {
 	startGenny(containers)
 }
 
+func tailServiceLogs(containers []string) {
+
+	fmt.Print("\nTailing Service logs...\n\n")
+	os.Chdir(GENNY_MAIN)
+
+	// get all active containers
+	out, err := exec.Command("docker", "ps", "-a", "--format", "{{.Names}}").Output()
+	if err != nil {
+		panic(err)
+	}
+
+	// convert from string to array
+	activeContainers := string(out)
+	activeContainerArray := strings.Split(activeContainers, "\n")
+
+	var containersToLog []string
+
+	// diy grepper, check if container has substring
+	for _, a := range activeContainerArray {
+		add := false
+		for _, c := range containers {
+			if strings.Contains(a, c) {
+				add = true
+			}
+		}
+
+		if add {
+			containersToLog = append(containersToLog, a)
+		}
+	}
+
+	// docker log our containers
+	arguments := append([]string{"logs", "-f"}, containersToLog...)
+	cmd := exec.Command("docker-compose", arguments...)
+	cmd.Stderr = os.Stderr
+	tail(cmd)
+
+	// set back to current working dir
+	os.Chdir(CURREND_DIR)
+}
