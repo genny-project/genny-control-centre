@@ -6,18 +6,34 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
 	"github.com/joho/godotenv"
 )
 
 var dependencies = []string{"qwandaq", "serviceq"}  
 var services = []string{"bridge", "kogitoq2", "fyodor", "lauchy", "dropkick", "messages"}  
+var utilities = []string{"genny-main"}
+
+func projects() []string {
+
+   files, _ := ioutil.ReadDir("../")
+
+   var output []string
+   for _, f := range files {
+	   if strings.HasPrefix(f.Name(), "prj_") {
+		   output = append(output, f.Name())
+	   }
+   }
+
+	return output
+}
 
 func repos() []string {
 
 	var output []string
 	output = append(output, dependencies...)
 	output = append(output, services...)
+	output = append(output, utilities...)
+	output = append(output, projects()...)
 
 	return output
 }
@@ -43,19 +59,30 @@ func loadProjects() {
 	
 	os.Chdir(GENNY_MAIN)
 
-   files, _ := ioutil.ReadDir("../")
-   
-   for _, f := range files {
-	   if strings.HasPrefix(f.Name(), "prj_") {
+	projects := projects()
 
-		   fmt.Println("Copying rules for " + Yellow(f.Name()))
+	for _, p := range projects {
+		fmt.Println("Copying rules for " + Yellow(p))
 
-		   cmd := exec.Command("cp", "-rp", "../"+f.Name()+"/rules", "./rules/"+f.Name()+"/")
-		   cmd.Stderr = os.Stderr
-		   tail(cmd)
-	   }
-   }
+		cmd := exec.Command("cp", "-rp", "../" + p + "/rules", "./rules/" + p + "/")
+		cmd.Stderr = os.Stderr
+		tail(cmd)
+	}
+}
 
+func createDockerNetwork(network string) {
+
+	cmd := exec.Command("docker", "network", "create", "--gateway", "172.18.0.1", "--subnet", "172.18.0.0/24", network)
+	cmd.Stderr = os.Stderr
+	cmd.Output()
+	// tail(cmd)
+}
+
+func createDockerVolume(volume string) {
+
+	cmd := exec.Command("docker", "volume", "create", volume)
+	cmd.Stderr = os.Stderr
+	tail(cmd)
 }
 
 func repoStatus() {
@@ -128,6 +155,31 @@ func pullRepos() {
 	os.Chdir(CURREND_DIR)
 }
 
+func checkoutRepos(branch string) {
+
+	repos := repos()
+
+	for i := 0; i < len(repos); i++ {
+
+		// create path to rep
+		repo := repos[i]
+		path := HOME + "/projects/genny/" + repo
+		fmt.Println(Yellow("Checking out " + repo + "to " + branch + "..."))
+
+		os.Chdir(path)
+		// stash
+		cmd := exec.Command("git", "stash")
+		tail(cmd)
+		// checkout
+		cmd = exec.Command("git", "checkout", branch)
+		tail(cmd)
+		fmt.Println("")
+	}
+
+	// set back to current working dir
+	os.Chdir(CURREND_DIR)
+}
+
 func buildDockerImages() {
 
 	// build dependencies
@@ -167,9 +219,17 @@ func buildDockerImages() {
 func startGenny(containers []string) {
 
 	os.Chdir(GENNY_MAIN)
+
+	// load credentials and rules directories
 	loadCredentials("dev1")
 	fmt.Println("")
+
 	loadProjects()
+	fmt.Println("")
+
+	// create network and volume
+	createDockerNetwork("mainproxy")
+	createDockerVolume("mysql_data")
 
 	fmt.Print("\nStarting Docker Containers...\n\n")
 

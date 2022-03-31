@@ -70,6 +70,14 @@ func main() {
 		pullRepos()
 		os.Exit(0)
 
+	case "checkout":
+		if len(args) > 1 {
+			checkoutRepos(args[1])
+		} else {
+			fmt.Println(Red("Please provide a valid branch to checkout!"))
+		}
+		os.Exit(0)
+
 	case "build":
 		buildDockerImages()
 		os.Exit(0)
