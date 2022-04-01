@@ -107,12 +107,12 @@ func repoStatus() {
 		repo := repos[i]
 		path := HOME + "/projects/genny/" + repo
 
-		// Move to repo and pull
+		// Move to repo and get branch
 		os.Chdir(path)
 		branch, _ := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD").Output()
 		fmt.Printf("Project: %s \t Branch; %s\n", Yellow(repo), Green(string(branch)))
 
-		cmd := exec.Command("git", "-c", "color.status=always", "status")
+		cmd := exec.Command("git", "-c", "color.ui=always", "status")
 		tail(cmd)
 		fmt.Println("")
 	}
@@ -136,7 +136,7 @@ func cloneRepos(version string) {
 		fmt.Println(Yellow("Cloning " + repo + "..."))
 
 		// clone repo
-		cmd := exec.Command("git", "clone", "-b", version, url)
+		cmd := exec.Command("git", "-c", "color.ui=always", "clone", "-b", version, url)
 		tail(cmd)
 		fmt.Println("")
 	}
@@ -158,7 +158,7 @@ func pullRepos() {
 
 		// Move to repo and pull
 		os.Chdir(path)
-		cmd := exec.Command("git", "pull")
+		cmd := exec.Command("git", "-c", "color.ui=always", "pull")
 		tail(cmd)
 		fmt.Println("")
 	}
@@ -176,14 +176,14 @@ func checkoutRepos(branch string) {
 		// create path to rep
 		repo := repos[i]
 		path := HOME + "/projects/genny/" + repo
-		fmt.Println(Yellow("Checking out " + repo + "to " + branch + "..."))
+		fmt.Println(Yellow("Checking out " + repo + " to " + branch + "..."))
 
 		os.Chdir(path)
 		// stash
 		cmd := exec.Command("git", "stash")
 		tail(cmd)
 		// checkout
-		cmd = exec.Command("git", "checkout", branch)
+		cmd = exec.Command("git", "-c", "color.ui=always", "checkout", branch)
 		tail(cmd)
 		fmt.Println("")
 	}

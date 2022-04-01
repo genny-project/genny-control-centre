@@ -7,7 +7,7 @@ import (
 )
 
 // gctl version
-var version string = "1.0.2"
+var version string = "1.2.1"
 
 // environment variables
 var HOME string
