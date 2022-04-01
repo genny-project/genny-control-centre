@@ -16,13 +16,14 @@ var GENNY_MAIN string
 var ENV_FILE string
 var CURRENT_DIR string
 
+// Main function execution.
 func main() {
 
 	// genny location vars
 	HOME = os.Getenv("HOME")
 	GENNY_HOME = os.Getenv("GENNY_HOME")
 	GENNY_MAIN = os.Getenv("GENNY_MAIN")
-	ENV_FILE = os.Getenv("ENV_FILE")
+	ENV_FILE = os.Getenv("GENNY_ENV_FILE")
 
 	CURRENT_DIR, _ = os.Getwd()
 
@@ -109,14 +110,6 @@ func main() {
 				tailServiceLogs(nil)
 			}
 			os.Exit(0)
-
-		// case "write":
-		// 	// env, err := godotenv.Unmarshal("KEY=value")
-		// 	err = godotenv.Write(os.env, "./.env")
-		// 	if err != nil {
-		// 		panic(err)
-		// 	}
-		// 	os.Exit(0)
 	}
 
 	// multi length commands
@@ -158,11 +151,13 @@ func main() {
 	os.Exit(0)
 }
 
+// Print a prompt for finding the help command.
 func helpPrompt() {
 
 	fmt.Println("\nTo see a list of valid commands, run: \n    gctl help")
 }
 
+// Print a help description.
 func help() {
 
 	fmt.Println("")
@@ -225,6 +220,7 @@ func help() {
 	fmt.Println("")
 }
 
+// Exit the program if the length of arguments is not adequate.
 func exitOnNil(args []string, index int) {
 
 	if len(args) <= index {

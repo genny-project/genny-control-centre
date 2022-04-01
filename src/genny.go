@@ -38,21 +38,7 @@ func repos() []string {
 	return output
 }
 
-func Merge(x map[string]string, y map[string]string) map[string]string {
-
-	output := make(map[string]string)
-
-	for k, v := range y {
-		output[k] = v
-	}
-
-	for k, v := range x {
-		output[k] = v
-	}
-
-	return output
-}
-
+// Load a user specific environment.
 func loadEnvironment(user string) {
 
 	fmt.Println("\nLoading credentials config for " + Blue(user))
@@ -74,12 +60,13 @@ func loadEnvironment(user string) {
 
 	output := Merge(envMap, credMap)
 
-	err = godotenv.Write(output, GENNY_MAIN + "/.env")
+	err = godotenv.Write(output, GENNY_MAIN + "/genny.env")
 	if err != nil {
 		panic(err)
 	}
 }
 
+// Load project rules into the central rules directory.
 func loadProjects() {
 	
 	os.Chdir(GENNY_MAIN)

@@ -1,3 +1,5 @@
+// Genny Cache related operations.
+
 package main
 
 import (
@@ -8,6 +10,7 @@ import (
 	"strings"
 )
 
+// Selector function for operations on the Genny cache
 func cacheOperation(args []string) {
 
 	switch args[0] {
@@ -31,6 +34,7 @@ func cacheOperation(args []string) {
 	}
 }
 
+// Read the data stored in the cache for a given key.
 func readCache(key string) {
 
 	fmt.Printf("Reading %s from cache...\n", Yellow(key))
@@ -67,12 +71,14 @@ func readCache(key string) {
 
 	output, err := PrettyString(string(responseBody))
 	if err != nil {
-		panic(err)
+		// panic(err)
+		output = string(responseBody)
 	}
 
 	fmt.Println("\n" + output)
 }
 
+// Write a value to the cache for a given key.
 func writeCache(key string, value string) {
 
 	fmt.Printf("Writing value to cache for key %s...\n", Yellow(key))
@@ -113,6 +119,7 @@ func writeCache(key string, value string) {
 	}
 }
 
+// Remove an item stored in the cache using the item key.
 func removeCache(key string) {
 
 	fmt.Printf("Removing value in cache for key %s...\n", Yellow(key))
