@@ -1,10 +1,9 @@
+// Token Utilities
 package main
 
 import (
-	// "bytes"
 	"encoding/json"
 	"strings"
-	// "encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -23,6 +22,7 @@ type KeycloakResponse struct {
 	Scope 				string 		`json:"scope"`
 }
 
+// Selector for token based operations.
 func tokenOperation(args []string) {
 
 	switch args[0] {
@@ -39,6 +39,8 @@ func tokenOperation(args []string) {
 	}
 }
 
+// Get an access token from keycloak using the service 
+// user environment variables.
 func getToken() string {
 
 	// grab keycloak access vars

@@ -1,5 +1,4 @@
-// Genny Cache related operations.
-
+// Cache Utilities
 package main
 
 import (
@@ -43,17 +42,20 @@ func readCache(key string) {
 
 	uri := "http://localhost:4242/cache/" + key
 
+	// create GET request
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
 		fmt.Print(err)
 		os.Exit(0)
 	}
 
+	// set the request headers
 	req.Header = http.Header {
 		"Content-Type": []string{"application/json"},
 		"Authorization": []string{"Bearer " + token},
 	}
 
+	// execute request
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -71,7 +73,6 @@ func readCache(key string) {
 
 	output, err := PrettyString(string(responseBody))
 	if err != nil {
-		// panic(err)
 		output = string(responseBody)
 	}
 
@@ -87,17 +88,20 @@ func writeCache(key string, value string) {
 
 	uri := "http://localhost:4242/cache/" + key
 
+	// create POST request
 	req, err := http.NewRequest("POST", uri, strings.NewReader(value))
 	if err != nil {
 		fmt.Print(err)
 		os.Exit(0)
 	}
 
+	// set the request headers
 	req.Header = http.Header {
 		"Content-Type": []string{"application/json"},
 		"Authorization": []string{"Bearer " + token},
 	}
 
+	// execute request
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -128,17 +132,20 @@ func removeCache(key string) {
 
 	uri := "http://localhost:4242/cache/" + key
 
+	// create DELETE request
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
 		fmt.Print(err)
 		os.Exit(0)
 	}
 
+	// set the request headers
 	req.Header = http.Header {
 		"Content-Type": []string{"application/json"},
 		"Authorization": []string{"Bearer " + token},
 	}
 
+	// execute request
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {

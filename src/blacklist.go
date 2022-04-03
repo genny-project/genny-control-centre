@@ -1,3 +1,4 @@
+// Blacklist Utilities
 package main
 
 import (
@@ -5,6 +6,7 @@ import (
 	"os"
 )
 
+// Selector for blacklisting operations
 func blacklistOperation(args []string) {
 
 	switch args[0] {
@@ -20,6 +22,7 @@ func blacklistOperation(args []string) {
 	}
 }
 
+// Delete a blacklist using the user ID
 func deleteBlacklist(id string) {
 	unavailable()
 }

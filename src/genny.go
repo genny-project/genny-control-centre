@@ -1,3 +1,4 @@
+// Genny System Utilities
 package main
 
 import (
@@ -13,6 +14,7 @@ var dependencies = []string{"qwandaq", "serviceq"}
 var services = []string{"bridge", "kogitoq2", "fyodor", "lauchy", "dropkick", "messages"}  
 var utilities = []string{"genny-main"}
 
+// Return a list of all project repositories
 func projects() []string {
 
    files, _ := ioutil.ReadDir("../")
@@ -27,6 +29,7 @@ func projects() []string {
 	return output
 }
 
+// Return a slice of all repository names
 func repos() []string {
 
 	var output []string
@@ -82,14 +85,15 @@ func loadProjects() {
 	}
 }
 
+// Create a docker network
 func createDockerNetwork(network string) {
 
 	cmd := exec.Command("docker", "network", "create", "--gateway", "172.18.0.1", "--subnet", "172.18.0.0/24", network)
 	cmd.Stderr = os.Stderr
 	cmd.Output()
-	// tail(cmd)
 }
 
+// Create a docker volume
 func createDockerVolume(volume string) {
 
 	cmd := exec.Command("docker", "volume", "create", volume)
@@ -97,6 +101,7 @@ func createDockerVolume(volume string) {
 	tail(cmd)
 }
 
+// Perform a git status on all repositories.
 func repoStatus() {
 
 	repos := repos()
@@ -121,6 +126,7 @@ func repoStatus() {
 	os.Chdir(CURRENT_DIR)
 }
 
+// Perform a git clone on all repositories.
 func cloneRepos(version string) {
 
 	path := HOME + "/projects/genny"
@@ -145,6 +151,7 @@ func cloneRepos(version string) {
 	os.Chdir(CURRENT_DIR)
 }
 
+// Perform a git pull on all repositories.
 func pullRepos() {
 
 	repos := repos()
@@ -167,6 +174,7 @@ func pullRepos() {
 	os.Chdir(CURRENT_DIR)
 }
 
+// Perform a git checkout on all repositories.
 func checkoutRepos(branch string) {
 
 	repos := repos()
@@ -192,7 +200,10 @@ func checkoutRepos(branch string) {
 	os.Chdir(CURRENT_DIR)
 }
 
+// Build all required Genny docker images.
 func buildDockerImages() {
+
+	// TODO: add more repos to this function
 
 	// build dependencies
 	for i := 0; i < len(dependencies); i++ {
@@ -228,6 +239,7 @@ func buildDockerImages() {
 	os.Chdir(CURRENT_DIR)
 }
 
+// Start the Genny system.
 func startGenny(containers []string) {
 
 	os.Chdir(GENNY_MAIN)
@@ -262,6 +274,7 @@ func startGenny(containers []string) {
 	os.Chdir(CURRENT_DIR)
 }
 
+// Stop the Genny system.
 func stopGenny(containers []string) {
 
 	fmt.Print("\nStopping Docker Containers...\n\n")
@@ -299,6 +312,7 @@ func stopGenny(containers []string) {
 	os.Chdir(CURRENT_DIR)
 }
 
+// Restart the Genny system.
 func restartGenny(containers []string) {
 
 	// stop and start containers
@@ -306,6 +320,7 @@ func restartGenny(containers []string) {
 	startGenny(containers)
 }
 
+// Watch the logs for a set of Genny containers.
 func tailServiceLogs(containers []string) {
 
 	fmt.Print("\nTailing Service logs...\n\n")

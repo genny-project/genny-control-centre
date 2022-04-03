@@ -1,7 +1,7 @@
+// Entity Utilities
 package main
 
 import (
-	// "encoding/json"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -29,6 +29,7 @@ type BaseEntity struct {
 	BaseEntityAttributes	[]EntityAttribute 	`json:"baseEntityAttributes"`
 }
 
+// Selector for entity based operations.
 func entityOperation(args []string) {
 
 	switch args[0] {
@@ -48,6 +49,7 @@ func entityOperation(args []string) {
 	}
 }
 
+// Show the current state of an entity in the Database.
 func showEntity(code string) {
 	fmt.Printf("Showing Entity %s...\n", Yellow(code))
 
@@ -159,6 +161,7 @@ func showEntity(code string) {
 	fmt.Println(divider)
 }
 
+// Watch the current state of an entity in the Database.
 func watchEntity(code string) {
 	unavailable()
 }

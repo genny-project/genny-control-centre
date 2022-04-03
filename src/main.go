@@ -15,6 +15,7 @@ var GENNY_HOME string
 var GENNY_MAIN string
 var ENV_FILE string
 var CURRENT_DIR string
+var CONTAINER_ENGINE string
 
 // Main function execution.
 func main() {
@@ -24,6 +25,7 @@ func main() {
 	GENNY_HOME = os.Getenv("GENNY_HOME")
 	GENNY_MAIN = os.Getenv("GENNY_MAIN")
 	ENV_FILE = os.Getenv("GENNY_ENV_FILE")
+	CONTAINER_ENGINE = os.Getenv("CONTAINER_ENGINE")
 
 	CURRENT_DIR, _ = os.Getwd()
 
