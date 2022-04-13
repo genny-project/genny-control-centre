@@ -10,8 +10,9 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var dependencies = []string{"qwandaq", "serviceq"}  
-var services = []string{"bridge", "kogitoq2", "fyodor", "lauchy", "dropkick", "messages"}  
+var oldDependencies = []string{"qwanda", "qwanda-utils", "bootxport", "genny-verticle-rules", "genny-rules", "qwanda-services"}  
+var oldServices = []string{"wildfly-qwanda-service", "wildfly-rulesservice"}  
+var services = []string{"gennyq", "alyson"}
 var utilities = []string{"genny-main"}
 
 // Return a list of all project repositories
@@ -33,7 +34,8 @@ func projects() []string {
 func repos() []string {
 
 	var output []string
-	output = append(output, dependencies...)
+	output = append(output, oldDependencies...)
+	output = append(output, oldServices...)
 	output = append(output, services...)
 	output = append(output, utilities...)
 	output = append(output, projects()...)
@@ -161,10 +163,11 @@ func pullRepos() {
 		// create path to rep
 		repo := repos[i]
 		path := HOME + "/projects/genny/" + repo
+		os.Chdir(path)
+
 		fmt.Println(Yellow("Pulling " + repo + "..."))
 
-		// Move to repo and pull
-		os.Chdir(path)
+		// perform a pull
 		cmd := exec.Command("git", "-c", "color.ui=always", "pull")
 		tail(cmd)
 		fmt.Println("")
@@ -206,11 +209,11 @@ func buildDockerImages() {
 	// TODO: add more repos to this function
 
 	// build dependencies
-	for i := 0; i < len(dependencies); i++ {
+	for i := 0; i < len(oldDependencies); i++ {
 
 		// create path to repo
-		repo := dependencies[i]
-		path := HOME + "/projects/genny/" + repo
+		repo := oldDependencies[i]
+		path := GENNY_HOME + "/" + repo
 		fmt.Println(Yellow("Building " + repo + "..."))
 
 		// Move to repo and build
@@ -220,12 +223,32 @@ func buildDockerImages() {
 		fmt.Println("")
 	}
 
+	for i := 0; i < len(oldServices); i++ {
+
+		// create path to repo
+		repo := oldServices[i]
+		path := GENNY_HOME + "/" + repo
+		fmt.Println(Yellow("Building " + repo + "..."))
+
+		// Move to repo and build
+		os.Chdir(path)
+		cmd := exec.Command("./build-docker.sh")
+		tail(cmd)
+		fmt.Println("")
+	}
+
 	// build services
 	for i := 0; i < len(services); i++ {
 
 		// create path to repo
 		repo := services[i]
-		path := HOME + "/projects/genny/" + repo
+		path := GENNY_HOME + "/" + repo
+
+		// handle alyson path
+		if repo == "alyson" {
+			path = path + "/scripts"
+		}
+
 		fmt.Println(Yellow("Building " + repo + "..."))
 
 		// Move to repo and build image
