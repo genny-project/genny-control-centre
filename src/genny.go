@@ -129,7 +129,12 @@ func repoStatus() {
 }
 
 // Perform a git clone on all repositories.
-func cloneRepos(version string) {
+func cloneRepos(parser Parser) {
+
+	version := ""
+	if len(parser.coreArgs) > 1 {
+		version = parser.get(1)
+	}
 
 	path := HOME + "/projects/genny"
 	os.Chdir(path)
@@ -178,8 +183,9 @@ func pullRepos() {
 }
 
 // Perform a git checkout on all repositories.
-func checkoutRepos(branch string) {
+func checkoutRepos(parser Parser) {
 
+	branch := parser.get(0)
 	repos := repos()
 
 	for i := 0; i < len(repos); i++ {
@@ -263,7 +269,9 @@ func buildDockerImages() {
 }
 
 // Start the Genny system.
-func startGenny(containers []string) {
+func startGenny(parser Parser) {
+
+	containers := parser.getFrom(1)
 
 	os.Chdir(GENNY_MAIN)
 
@@ -295,10 +303,16 @@ func startGenny(containers []string) {
 
 	// set back to current working dir
 	os.Chdir(CURRENT_DIR)
+
+	if parser.hasFlag("-f") {
+		tailServiceLogs(parser)
+	}
 }
 
 // Stop the Genny system.
-func stopGenny(containers []string) {
+func stopGenny(parser Parser) {
+
+	containers := parser.getFrom(1)
 
 	fmt.Print("\nStopping Docker Containers...\n\n")
 	os.Chdir(GENNY_MAIN)
@@ -336,15 +350,17 @@ func stopGenny(containers []string) {
 }
 
 // Restart the Genny system.
-func restartGenny(containers []string) {
+func restartGenny(parser Parser) {
 
 	// stop and start containers
-	stopGenny(containers)
-	startGenny(containers)
+	stopGenny(parser)
+	startGenny(parser)
 }
 
 // Watch the logs for a set of Genny containers.
-func tailServiceLogs(containers []string) {
+func tailServiceLogs(parser Parser) {
+
+	containers := parser.getFrom(1)
 
 	fmt.Print("\nTailing Service logs...\n\n")
 	os.Chdir(GENNY_MAIN)

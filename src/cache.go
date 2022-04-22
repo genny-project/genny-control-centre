@@ -9,30 +9,6 @@ import (
 	"strings"
 )
 
-// Selector function for operations on the Genny cache
-func cacheOperation(args []string) {
-
-	switch args[0] {
-
-		case "read":
-			exitOnNil(args, 2)
-			readCache(args[2])
-
-		case "write":
-			exitOnNil(args, 3)
-			writeCache(args[2], args[3])
-
-		case "remove":
-			exitOnNil(args, 2)
-			removeCache(args[2])
-
-		default:
-			fmt.Printf(Red("Invalid argument: %s\n\n"), args[1])
-			helpPrompt()
-			os.Exit(0)
-	}
-}
-
 // Read the data stored in the cache for a given key.
 func readCache(key string) {
 

@@ -4,7 +4,6 @@ package main
 import (
 	"encoding/json"
 	"strings"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -20,23 +19,6 @@ type KeycloakResponse struct {
 	NotBeforePolicy 	int 		`json:"not"-before-policy`
 	SessionState 		string 		`json:"session_state"`
 	Scope 				string 		`json:"scope"`
-}
-
-// Selector for token based operations.
-func tokenOperation(args []string) {
-
-	switch args[0] {
-
-		case "get":
-			token := getToken()
-			fmt.Println("")
-			fmt.Println(token)
-
-		default:
-			fmt.Printf(Red("Invalid argument: %s\n\n"), args[1])
-			helpPrompt()
-			os.Exit(0)
-	}
 }
 
 // Get an access token from keycloak using the service 
@@ -59,7 +41,10 @@ func getToken() string {
 	data.Set("username", serviceUsername)
 	data.Set("password", servicePassword)
 	data.Set("client_id", clientID)
-	data.Set("client_secret", clientSecret)
+
+	if clientSecret != "" {
+		data.Set("client_secret", clientSecret)
+	}
 
 	// create POST request
 	req, err := http.NewRequest("POST", uri, strings.NewReader(data.Encode()))

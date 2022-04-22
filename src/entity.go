@@ -29,26 +29,6 @@ type BaseEntity struct {
 	BaseEntityAttributes	[]EntityAttribute 	`json:"baseEntityAttributes"`
 }
 
-// Selector for entity based operations.
-func entityOperation(args []string) {
-
-	switch args[0] {
-
-		case "show":
-			exitOnNil(args, 2)
-			showEntity(args[2])
-
-		case "watch":
-			exitOnNil(args, 2)
-			watchEntity(args[2])
-
-		default:
-			fmt.Printf(Red("Invalid argument: %s\n\n"), args[1])
-			help()
-			os.Exit(0)
-	}
-}
-
 // Show the current state of an entity in the Database.
 func showEntity(code string) {
 	fmt.Printf("Showing Entity %s...\n", Yellow(code))

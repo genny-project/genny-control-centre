@@ -1,8 +1,10 @@
 package main
 
 import (
-	"os"
 	"fmt"
+	"os"
+	// "strings"
+
 	"github.com/joho/godotenv"
 )
 
@@ -42,111 +44,106 @@ func main() {
 		os.Exit(0)
 	}
 
-	// single length commands
-	switch args[0] {
+	// custom argument parser
+	parser := Parser{}
+	parser.parse(args)
 
-		case "version":
-			fmt.Printf("%s\n", version)
-			os.Exit(0)
+	if parser.containsOne("version") {
 
-		case "help":
-			help()
-			os.Exit(0)
+		fmt.Printf("%s\n", version)
 
-		case "status":
-			repoStatus()
-			os.Exit(0)
+	} else if parser.containsOne("help") {
 
-		case "clone":
-			version := ""
-			if len(args) > 1 {
-				version = args[1]
-			}
-			cloneRepos(version)
-			os.Exit(0)
+		help()
 
-		case "pull":
-			pullRepos()
-			os.Exit(0)
+	} else if parser.containsOne("status") {
 
-		case "checkout":
-			if len(args) > 1 {
-				checkoutRepos(args[1])
-			} else {
-				fmt.Println(Red("Please provide a valid branch to checkout!"))
-			}
-			os.Exit(0)
+		repoStatus()
 
-		case "build":
-			buildDockerImages()
-			os.Exit(0)
+	} else if parser.containsOne("clone") {
 
-		case "start":
-			if len(args) > 1 {
-				startGenny(args[1:])
-			} else {
-				startGenny(nil)
-			}
-			os.Exit(0)
+		cloneRepos(parser)
 
-		case "stop":
-			if len(args) > 1 {
-				stopGenny(args[1:])
-			} else {
-				stopGenny(nil)
-			}
-			os.Exit(0)
+	} else if parser.containsOne("pull") {
 
-		case "restart":
-			if len(args) > 1 {
-				restartGenny(args[1:])
-			} else {
-				restartGenny(nil)
-			}
-			os.Exit(0)
+		pullRepos()
 
-		case "logs":
-			if len(args) > 1 {
-				tailServiceLogs(args[1:])
-			} else {
-				tailServiceLogs(nil)
-			}
-			os.Exit(0)
-	}
+	} else if parser.containsOne("checkout") {
 
-	// multi length commands
-	if len(args) > 1 {
+		checkoutRepos(parser)
 
-		switch args[1] {
+	} else if parser.containsOne("build") {
 
-		case "cache":
-			exitOnNil(args, 1)
-			cacheOperation(args)
+		buildDockerImages()
 
-		case "entity":
-			exitOnNil(args, 1)
-			entityOperation(args)
+	} else if parser.containsOne("start") {
 
-		case "search":
-			exitOnNil(args, 1)
-			searchOperation(args)
+		startGenny(parser)
 
-		case "token":
-			exitOnNil(args, 1)
-			tokenOperation(args)
+	} else if parser.containsOne("stop") {
 
-		case "rules":
-			exitOnNil(args, 1)
-			rulesOperation(args)
+		stopGenny(parser)
 
-		case "blacklist":
-			exitOnNil(args, 1)
-			blacklistOperation(args)
+	} else if parser.containsOne("restart") {
 
-		default:
-			fmt.Printf(Red("Invalid argument: %s\n"), args[1])
-			helpPrompt()
-		}
+		restartGenny(parser)
+
+	} else if parser.containsOne("logs") {
+
+		tailServiceLogs(parser)
+
+	// cache operations
+	} else if parser.containsTwo("read", "cache") {
+
+		readCache(parser.get(2))
+
+	} else if parser.containsTwo("write", "cache") {
+
+		writeCache(parser.get(2), parser.get(3))
+
+	} else if parser.containsTwo("remove", "cache") {
+
+		removeCache(parser.get(2))
+
+	} else if parser.containsTwo("show", "entity") {
+
+		showEntity(parser.get(2))
+
+	} else if parser.containsTwo("watch", "entity") {
+
+		watchEntity(parser.get(2))
+
+	} else if parser.containsTwo("fetch", "search") {
+
+		fetch(parser.get(2))
+
+	} else if parser.containsTwo("count", "search") {
+
+		count(parser.get(2))
+
+	} else if parser.containsTwo("get", "token") {
+
+		token := getToken()
+		fmt.Println("")
+		fmt.Println(token)
+
+	} else if parser.containsTwo("reload", "rules") {
+
+		reloadRules()
+
+	} else if parser.containsTwo("run", "rules") {
+
+		runRules(parser.get(2))
+
+	} else if parser.containsTwo("delete", "blacklist") {
+
+		deleteBlacklist(parser.get(2))
+
+	} else {
+
+		fmt.Printf(Red("Invalid argument: %s\n"), parser.get(1))
+		helpPrompt()
+
 	}
 
 	// finish

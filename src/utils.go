@@ -10,6 +10,17 @@ import (
 	"os/exec"
 )
 
+func containsOrdered(args []string, contains []string) bool {
+
+	for index, x := range(contains) {
+		if args[index] != x {
+			return false;
+		} 
+	}
+
+	return true
+}
+
 // Helper funtion for unavailable commands.
 func unavailable() {
 	fmt.Println(Red("Sorry, this action is unavailable at this moment."))
