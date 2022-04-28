@@ -46,7 +46,7 @@ func repos() []string {
 // Load a user specific environment.
 func loadEnvironment(user string) {
 
-	fmt.Println("\nLoading credentials config for " + Blue(user))
+	fmt.Println("Loading credentials config for " + Blue(user))
 
 	var envMap map[string]string
 	var credMap map[string]string
@@ -85,6 +85,20 @@ func loadProjects() {
 		cmd.Stderr = os.Stderr
 		tail(cmd)
 	}
+}
+
+func loadProtobufs() {
+
+	os.Chdir(GENNY_MAIN)
+
+	PERSISTENCE_FOLDER := GENNY_MAIN + "/target/protobuf"
+	TARGET_PROTOS := GENNY_HOME + "/gennyq/kogitoq/gadaq/target/classes/META-INF/resources/persistence/protobuf/*.proto"
+
+	fmt.Println("Copying protobufs for " + Yellow("gadaq"))
+
+	cmd := exec.Command("/bin/cp", "-f", TARGET_PROTOS, PERSISTENCE_FOLDER)
+	cmd.Stderr = os.Stderr
+	tail(cmd)
 }
 
 // Create a docker network
@@ -275,18 +289,18 @@ func startGenny(parser Parser) {
 
 	os.Chdir(GENNY_MAIN)
 
-	// load credentials and rules directories
-	loadEnvironment("dev1")
-	fmt.Println("")
+	// load credentials, rules directories and protos
+	Banner("Loading System...")
 
+	loadEnvironment("dev1")
 	loadProjects()
-	fmt.Println("")
+	// loadProtobufs()
 
 	// create network and volume
 	createDockerNetwork("mainproxy")
 	createDockerVolume("mysql_data")
 
-	fmt.Print("\nStarting Docker Containers...\n\n")
+	Banner("Starting Docker Containers...")
 
 	if containers != nil {
 		// start containers
@@ -314,7 +328,8 @@ func stopGenny(parser Parser) {
 
 	containers := parser.getFrom(1)
 
-	fmt.Print("\nStopping Docker Containers...\n\n")
+	Banner("Stopping Docker Containers...")
+
 	os.Chdir(GENNY_MAIN)
 
 	if containers != nil {
@@ -324,7 +339,7 @@ func stopGenny(parser Parser) {
 		cmd.Stderr = os.Stderr
 		tail(cmd)
 
-		fmt.Print("\nRemoving Docker Containers...\n\n")
+		Banner("Removing Docker Containers...")
 
 		// remove containers
 		arguments = append([]string{"rm", "-f"}, containers...)
@@ -337,7 +352,7 @@ func stopGenny(parser Parser) {
 		cmd.Stderr = os.Stderr
 		tail(cmd)
 
-		fmt.Print("\nRemoving Docker Containers...\n\n")
+		Banner("Removing Docker Containers...")
 
 		// remove all containers
 		cmd = exec.Command("docker-compose", "rm", "-f")
@@ -362,7 +377,7 @@ func tailServiceLogs(parser Parser) {
 
 	containers := parser.getFrom(1)
 
-	fmt.Print("\nTailing Service logs...\n\n")
+	Banner("Tailing Service logs...")
 	os.Chdir(GENNY_MAIN)
 
 	// get all active containers

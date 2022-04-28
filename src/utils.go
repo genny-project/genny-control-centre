@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/fatih/color"
 	"os"
 	"os/exec"
 )
@@ -25,6 +26,18 @@ func containsOrdered(args []string, contains []string) bool {
 func unavailable() {
 	fmt.Println(Red("Sorry, this action is unavailable at this moment."))
 	os.Exit(0)
+}
+
+func Banner(title string) {
+
+	bannerLength := 60
+	fill := bannerLength - len(title) - 2
+
+	c := color.New(color.FgWhite, color.Bold)
+
+	c.Print("+" + Hyphens(bannerLength) + "+\n")
+	c.Print("| " + title + Spaces(fill) + " |\n")
+	c.Print("+" + Hyphens(bannerLength) + "+\n")
 }
 
 // Generate a pretty json string from an input string.

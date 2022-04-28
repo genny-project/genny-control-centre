@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-	// "strings"
-
+	"strings"
 	"github.com/joho/godotenv"
+	"github.com/fatih/color"
 )
 
 // gctl version
@@ -18,6 +18,10 @@ var GENNY_MAIN string
 var ENV_FILE string
 var CURRENT_DIR string
 var CONTAINER_ENGINE string
+
+var red = color.New(color.FgRed).PrintfFunc()
+var blue = color.New(color.FgBlue).PrintfFunc()
+var yellow = color.New(color.FgYellow).PrintfFunc()
 
 // Main function execution.
 func main() {
@@ -44,7 +48,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	// custom argument parser
+	// parse command line arguments and flags
 	parser := Parser{}
 	parser.parse(args)
 
@@ -141,7 +145,7 @@ func main() {
 
 	} else {
 
-		fmt.Printf(Red("Invalid argument: %s\n"), parser.get(1))
+		red("Invalid command: %s\n", strings.Join(parser.getFrom(0), " "))
 		helpPrompt()
 
 	}
@@ -160,7 +164,7 @@ func helpPrompt() {
 func help() {
 
 	fmt.Println("")
-	fmt.Println(Yellow("Genny System Control Centre"))
+	yellow("Genny System Control Centre\n")
 	fmt.Println("")
 	fmt.Println("Usage:")
 	fmt.Println("    gctl <operation> <command> <data>")
@@ -173,7 +177,7 @@ func help() {
 	fmt.Println("    gctl status")
 	fmt.Println("")
 	fmt.Println("")
-	fmt.Println(Blue("Commands: "))
+	blue("Commands:\n")
 	fmt.Println("    help         Show valid commands")
 	fmt.Println("    version      Print the version")
 	fmt.Println("")
@@ -194,27 +198,27 @@ func help() {
 	fmt.Println("    blacklist    Perform a blacklist operation")
 	fmt.Println("")
 	fmt.Println("")
-	fmt.Println(Blue("Cache Operations: "))
+	blue("Cache Operations:\n")
 	fmt.Println("    read         Read an item from the cache")
 	fmt.Println("    write        Write json to the cache")
 	fmt.Println("    remove       Remove an item from the cache")
 	fmt.Println("")
-	fmt.Println(Blue("Entity Operations: "))
+	blue("Entity Operations:\n")
 	fmt.Println("    show         Show the state of an entity in the database")
 	fmt.Println("    watch        Watch the state of an entity in the database")
 	fmt.Println("")
-	fmt.Println(Blue("Search Operations: "))
+	blue("Search Operations:\n")
 	fmt.Println("    fetch        Fetch entities using a Genny search")
 	fmt.Println("    count        Count entities using a Genny search")
 	fmt.Println("")
-	fmt.Println(Blue("Token Operations: "))
+	blue("Token Operations:\n")
 	fmt.Println("    get          Get an access token")
 	fmt.Println("")
-	fmt.Println(Blue("Rules Operations: "))
+	blue("Rules Operations:\n")
 	fmt.Println("    reload       Reload the rules engine")
 	fmt.Println("    run          Run a rule group")
 	fmt.Println("")
-	fmt.Println(Blue("Blacklist Operations: "))
+	blue("Blacklist Operations:\n")
 	fmt.Println("    delete       Delete a blacklist by user id")
 	fmt.Println("")
 }
