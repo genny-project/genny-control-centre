@@ -14,7 +14,7 @@ func readCache(key string) {
 
 	fmt.Printf("Reading %s from cache...\n", Yellow(key))
 
-	token := getToken()
+	token := getToken("test")
 
 	uri := "http://localhost:4242/cache/" + key
 
@@ -55,14 +55,19 @@ func readCache(key string) {
 	fmt.Println("\n" + output)
 }
 
+
 // Write a value to the cache for a given key.
-func writeCache(key string, value string) {
+func writeCacheUsingParser(parser Parser) {
+}
+
+// Write a value to the cache for a given key.
+func writeCache(productCode string, key string, value string) {
 
 	fmt.Printf("Writing value to cache for key %s...\n", Yellow(key))
 
-	token := getToken()
+	token := getToken("test")
 
-	uri := "http://localhost:4242/cache/" + key
+	uri := "http://localhost:4242/cache/" + productCode + "/" + key
 
 	// create POST request
 	req, err := http.NewRequest("POST", uri, strings.NewReader(value))
@@ -104,7 +109,7 @@ func removeCache(key string) {
 
 	fmt.Printf("Removing value in cache for key %s...\n", Yellow(key))
 
-	token := getToken()
+	token := getToken("test")
 
 	uri := "http://localhost:4242/cache/" + key
 

@@ -3,11 +3,11 @@ package main
 
 import (
 	"encoding/json"
-	"strings"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 )
 
 type KeycloakResponse struct {
@@ -16,30 +16,45 @@ type KeycloakResponse struct {
 	RefreshExpiresIn 	int  		`json:"refresh_expires_in"`
 	RefreshToken 		string 		`json:"refresh_token"`
 	TokenType			string 		`json:"token_type"`
-	NotBeforePolicy 	int 		`json:"not"-before-policy`
+	NotBeforePolicy 	int 		`json:"not-before-policy"`
 	SessionState 		string 		`json:"session_state"`
 	Scope 				string 		`json:"scope"`
 }
 
 // Get an access token from keycloak using the service 
 // user environment variables.
-func getToken() string {
+func getToken(user string) string {
 
 	// grab keycloak access vars
-	var realm string = os.Getenv("GENNY_REALM")
+	var realm string = os.Getenv("GENNY_KEYCLOAK_REALM")
 	var keycloakURL string = os.Getenv("GENNY_KEYCLOAK_URL")
-	var clientID string = os.Getenv("GENNY_CLIENT_ID")
-	var clientSecret string = os.Getenv("GENNY_CLIENT_SECRET")
-	var serviceUsername string = os.Getenv("GENNY_SERVICE_USERNAME")
-	var servicePassword string = os.Getenv("GENNY_SERVICE_PASSWORD")
+	var username string;
+	var password string;
+	var clientID string;
+	var clientSecret string = "";
+
+
+	if user == "service" {
+
+		clientID = os.Getenv("GENNY_CLIENT_ID")
+		clientSecret = os.Getenv("GENNY_CLIENT_SECRET")
+		username = os.Getenv("GENNY_SERVICE_USERNAME")
+		password = os.Getenv("GENNY_SERVICE_PASSWORD")
+
+	} else if user == "test" {
+
+		clientID = os.Getenv("GENNY_TEST_CLIENT_ID")
+		username = os.Getenv("GENNY_TEST_USERNAME")
+		password = os.Getenv("GENNY_TEST_PASSWORD")
+	}
 
 	uri := keycloakURL + "/auth/realms/" + realm + "/protocol/openid-connect/token"
 
 	// construct body of post request
 	data := url.Values{}
 	data.Set("grant_type", "password")
-	data.Set("username", serviceUsername)
-	data.Set("password", servicePassword)
+	data.Set("username", username)
+	data.Set("password", password)
 	data.Set("client_id", clientID)
 
 	if clientSecret != "" {

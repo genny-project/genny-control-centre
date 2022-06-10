@@ -10,8 +10,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var oldDependencies = []string{"qwanda", "qwanda-utils", "bootxport", "genny-verticle-rules", "genny-rules", "qwanda-services"}  
-var oldServices = []string{"wildfly-qwanda-service", "wildfly-rulesservice"}  
+var oldDependencies = []string{"qwanda", "qwanda-utils", "bootxport", "genny-verticle-rules", "genny-rules", "qwanda-services"}
+var oldServices = []string{"wildfly-qwanda-service", "wildfly-rulesservice"}
 var services = []string{"gennyq", "alyson"}
 var utilities = []string{"genny-main"}
 
@@ -72,7 +72,7 @@ func loadEnvironment(user string) {
 }
 
 // Load project rules into the central rules directory.
-func loadProjects() {
+func loadProjectRules() {
 	
 	os.Chdir(GENNY_MAIN)
 
@@ -282,6 +282,41 @@ func buildDockerImages() {
 	os.Chdir(CURRENT_DIR)
 }
 
+// Load project data using bootq
+func loadProjectData(parser Parser) {
+
+	projects := parser.getFrom(1)
+
+	os.Chdir(GENNY_MAIN)
+
+	// load credentials, rules directories and protos
+	Banner("Loading project data...")
+
+	if projects != nil {
+
+	}
+
+	// set back to current working dir
+	os.Chdir(CURRENT_DIR)
+}
+
+// Get all the compose file arguments in use
+func getComposeFileArguments() []string {
+
+	PRODUCT_CODES := os.Getenv("PRODUCT_CODES")
+	products := strings.Split(PRODUCT_CODES, ",")
+
+	arguments := []string{"-f", "docker-compose.yml"}
+
+	// add any product compose files
+	for _, product := range products {
+		file := GENNY_HOME + "/products/" + product + "/docker-compose.yml"
+		arguments = append(arguments, []string{"-f", file}...)
+	}
+
+	return arguments
+}
+
 // Start the Genny system.
 func startGenny(parser Parser) {
 
@@ -290,10 +325,10 @@ func startGenny(parser Parser) {
 	os.Chdir(GENNY_MAIN)
 
 	// load credentials, rules directories and protos
-	Banner("Loading System...")
+	Banner("Loading System Environment...")
 
 	loadEnvironment("dev1")
-	loadProjects()
+	loadProjectRules()
 	// loadProtobufs()
 
 	// create network and volume
@@ -302,18 +337,21 @@ func startGenny(parser Parser) {
 
 	Banner("Starting Docker Containers...")
 
+	// create compose arguments
+	arguments := getComposeFileArguments();
+	arguments = append(arguments, []string{"up", "-d"}...)
+
+	// select specific containers
 	if containers != nil {
-		// start containers
-		arguments := append([]string{"up", "-d"}, containers...)
-		cmd := exec.Command("docker-compose", arguments...)
-		cmd.Stderr = os.Stderr
-		tail(cmd)
-	} else {
-		// start all containers
-		cmd := exec.Command("docker-compose", "up", "-d")
-		cmd.Stderr = os.Stderr
-		tail(cmd)
+		arguments = append(arguments, containers...)
 	}
+
+	fmt.Println("docker-compose " + strings.Join(arguments[:], " "))
+
+	// run command with args
+	cmd := exec.Command("docker-compose", arguments...)
+	cmd.Stderr = os.Stderr
+	tail(cmd)
 
 	// set back to current working dir
 	os.Chdir(CURRENT_DIR)
@@ -328,37 +366,26 @@ func stopGenny(parser Parser) {
 
 	containers := parser.getFrom(1)
 
-	Banner("Stopping Docker Containers...")
-
 	os.Chdir(GENNY_MAIN)
 
+	arguments := getComposeFileArguments();
+	stop := append(arguments, []string{"stop"}...)
+	rm := append(arguments, []string{"rm", "-f"}...)
+
 	if containers != nil {
-		// stop containers
-		arguments := append([]string{"stop"}, containers...)
-		cmd := exec.Command("docker-compose", arguments...)
-		cmd.Stderr = os.Stderr
-		tail(cmd)
-
-		Banner("Removing Docker Containers...")
-
-		// remove containers
-		arguments = append([]string{"rm", "-f"}, containers...)
-		cmd = exec.Command("docker-compose", arguments...)
-		cmd.Stderr = os.Stderr
-		tail(cmd)
-	} else {
-		// stop all containers
-		cmd := exec.Command("docker-compose", "stop")
-		cmd.Stderr = os.Stderr
-		tail(cmd)
-
-		Banner("Removing Docker Containers...")
-
-		// remove all containers
-		cmd = exec.Command("docker-compose", "rm", "-f")
-		cmd.Stderr = os.Stderr
-		tail(cmd)
+		stop = append(stop, containers...)
+		rm = append(rm, containers...)
 	}
+
+	Banner("Stopping Docker Containers...")
+	cmd := exec.Command("docker-compose", stop...)
+	cmd.Stderr = os.Stderr
+	tail(cmd)
+
+	Banner("Removing Docker Containers...")
+	cmd = exec.Command("docker-compose", rm...)
+	cmd.Stderr = os.Stderr
+	tail(cmd)
 
 	// set back to current working dir
 	os.Chdir(CURRENT_DIR)
@@ -406,11 +433,17 @@ func tailServiceLogs(parser Parser) {
 		}
 	}
 
-	// docker log our containers
-	arguments := append([]string{"logs", "-f"}, containersToLog...)
-	cmd := exec.Command("docker-compose", arguments...)
-	cmd.Stderr = os.Stderr
-	tail(cmd)
+	if len(containersToLog) == 0 {
+		fmt.Println("No containers to log!")
+	} else {
+		// docker log our containers
+		arguments := getComposeFileArguments();
+		arguments = append(arguments, []string{"logs", "-f"}...)
+		arguments = append(arguments, containersToLog...)
+		cmd := exec.Command("docker-compose", arguments...)
+		cmd.Stderr = os.Stderr
+		tail(cmd)
+	}
 
 	// set back to current working dir
 	os.Chdir(CURRENT_DIR)

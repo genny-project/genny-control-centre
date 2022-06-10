@@ -33,7 +33,7 @@ type BaseEntity struct {
 func showEntity(code string) {
 	fmt.Printf("Showing Entity %s...\n", Yellow(code))
 
-	token := getToken()
+	token := getToken("test")
 
 	uri := "http://localhost:4242/entity/" + code
 

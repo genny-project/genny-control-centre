@@ -80,6 +80,10 @@ func main() {
 
 		buildDockerImages()
 
+	} else if parser.containsOne("load") {
+
+		loadProjectData(parser)
+
 	} else if parser.containsOne("start") {
 
 		startGenny(parser)
@@ -103,7 +107,7 @@ func main() {
 
 	} else if parser.containsTwo("write", "cache") {
 
-		writeCache(parser.get(2), parser.get(3))
+		writeCache(parser.get(2), parser.get(3), parser.get(4))
 
 	} else if parser.containsTwo("remove", "cache") {
 
@@ -127,8 +131,7 @@ func main() {
 
 	} else if parser.containsTwo("get", "token") {
 
-		token := getToken()
-		fmt.Println("")
+		token := getToken(parser.get(2))
 		fmt.Println(token)
 
 	} else if parser.containsTwo("reload", "rules") {
